@@ -133,6 +133,13 @@ body {
   text-align: left;
 }
 
+img {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
 .col img {
   width: 30px;
   margin-right: 10px;

@@ -1,4 +1,6 @@
-const apiKey ="78864d879e25d6f9d32610ba5fb3193f";
+import config from './config.js';
+
+const apiKey = config.apiKey;
 const apiUrl ="https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
 
 const searchBox = document.querySelector('.search input');
@@ -61,6 +63,7 @@ async function checkWeather(city) {
 searchBtn.addEventListener('click', () => {
     checkWeather(searchBox.value);
     searchBox.value = '';
+    searchBox.blur();
 });
 
 searchBox.addEventListener("keypress", (event) => {
@@ -68,5 +71,28 @@ searchBox.addEventListener("keypress", (event) => {
         event.preventDefault();
         checkWeather(searchBox.value);
         searchBox.value = '';
+        searchBox.blur();
     }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const images = document.querySelectorAll('img');
+    
+    images.forEach(img => {
+        img.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+        });
+        
+        img.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+        
+        img.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+        
+        img.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+    });
 });
