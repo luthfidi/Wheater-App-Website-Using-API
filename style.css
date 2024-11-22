@@ -6,34 +6,38 @@
 }
 
 body {
-  background-image: linear-gradient(
-      135deg,
-      rgba(30, 60, 114, 0.7),
-      rgba(42, 82, 152, 0.7)
-    ),
-    url("./images/cloud.webp");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 20px;
+  position: relative;
+}
+
+#vanta-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  transition: all 1s ease-in-out;
 }
 
 .card {
   width: 90%;
   max-width: 400px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(40px);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   color: #fff;
   border-radius: 20px;
   padding: 30px 25px;
   text-align: center;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3),
+              inset 0 0 15px rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.5s ease;
 }
 
 .card:hover {
@@ -76,7 +80,27 @@ body {
 }
 
 .search input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Meningkatkan keterbacaan teks */
+.info {
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  font-weight: 500;
+}
+
+#current-time {
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.weather h1,
+.weather h2 {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.details p {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  font-weight: 500;
 }
 
 .search input:focus {
@@ -142,16 +166,16 @@ body {
   text-align: left;
 }
 
+.col img {
+  width: 30px;
+  margin-right: 10px;
+}
+
 img {
   user-select: none;
   -webkit-user-select: none;
   -webkit-user-drag: none;
   -webkit-touch-callout: none;
-}
-
-.col img {
-  width: 30px;
-  margin-right: 10px;
 }
 
 .humidity,
@@ -175,85 +199,85 @@ img {
 
 @keyframes fadeIn {
   0% {
-    opacity: 0;
-    transform: translateY(-10px);
+      opacity: 0;
+      transform: translateY(-10px);
   }
   100% {
-    opacity: 1;
-    transform: translateY(0);
+      opacity: 1;
+      transform: translateY(0);
   }
 }
 
 @keyframes float {
   0%,
   100% {
-    transform: translateY(0);
+      transform: translateY(0);
   }
   50% {
-    transform: translateY(-20px);
+      transform: translateY(-20px);
   }
 }
 
 @media screen and (max-width: 480px) {
   .card {
-    padding: 20px 15px;
+      padding: 20px 15px;
   }
 
   #current-time {
-    font-size: 14px;
+      font-size: 14px;
   }
 
   .info {
-    font-size: 12px;
+      font-size: 12px;
   }
 
   .search input {
-    font-size: 14px;
-    padding: 8px 12px;
-    height: 40px;
+      font-size: 14px;
+      padding: 8px 12px;
+      height: 40px;
   }
 
   .search button {
-    width: 40px;
-    height: 40px;
+      width: 40px;
+      height: 40px;
   }
 
   .search i {
-    font-size: 16px;
+      font-size: 16px;
   }
 
   .weather-icon {
-    width: 100px;
+      width: 100px;
   }
 
   .weather h1 {
-    font-size: 40px;
+      font-size: 40px;
   }
 
   .weather h2 {
-    font-size: 25px;
+      font-size: 25px;
   }
 
   .humidity,
   .wind {
-    font-size: 18px;
+      font-size: 18px;
   }
 }
 
 @media screen and (min-width: 481px) and (max-width: 768px) {
   .card {
-    padding: 25px 20px;
+      padding: 25px 20px;
   }
 
   .weather-icon {
-    width: 110px;
+      width: 110px;
   }
 
   .weather h1 {
-    font-size: 45px;
+      font-size: 45px;
   }
 
   .weather h2 {
-    font-size: 28px;
+      font-size: 28px;
   }
 }

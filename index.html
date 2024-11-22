@@ -6,18 +6,20 @@
     <title>Weather App</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-
-    <!-- 
-    - favicon
-    -->
+    
+    <!-- Vanta.js dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.clouds.min.js"></script>
+    
+    <!-- Favicon links -->
     <link rel="icon" type="image/png" href="./images/favicon/favicon-48x48.png" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="./images/favicon/favicon.svg" />
     <link rel="shortcut icon" href="./images/favicon/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="./images/favicon/apple-touch-icon.png" />
     <link rel="manifest" href="./images/favicon/site.webmanifest" />
-    
 </head>
 <body>
+    <div id="vanta-background"></div>
     <div class="card">
         <div id="current-time"></div>
         <div class="info">
