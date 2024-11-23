@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather App</title>
+    
+    <!-- External CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     
@@ -11,43 +13,57 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.clouds.min.js"></script>
     
-    <!-- Favicon links -->
-    <link rel="icon" type="image/png" href="./images/favicon/favicon-48x48.png" sizes="48x48" />
-    <link rel="icon" type="image/svg+xml" href="./images/favicon/favicon.svg" />
-    <link rel="shortcut icon" href="./images/favicon/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="./images/favicon/apple-touch-icon.png" />
-    <link rel="manifest" href="./images/favicon/site.webmanifest" />
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="./images/favicon/favicon-48x48.png" sizes="48x48">
+    <link rel="icon" type="image/svg+xml" href="./images/favicon/favicon.svg">
+    <link rel="shortcut icon" href="./images/favicon/favicon.ico">
+    <link rel="apple-touch-icon" href="./images/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="./images/favicon/site.webmanifest">
 </head>
 <body>
+    <!-- Vanta.js background -->
     <div id="vanta-background"></div>
+
+    <!-- Main weather card -->
     <div class="card">
+        <!-- Time display -->
         <div id="current-time"></div>
+        
+        <!-- Info text -->
         <div class="info">
             Check the weather of any city by entering its name in the search box.
         </div>
+        
+        <!-- Search section -->
         <div class="search">
             <input type="text" placeholder="Enter city name" spellcheck="false">
             <button id="btn">
                 <i class="fas fa-search"></i>
             </button>
         </div>
+        
+        <!-- Error message -->
         <div class="error">
             <p>Invalid city name</p>
         </div>
+        
+        <!-- Weather information -->
         <div class="weather">
-            <img src="./images/sun.png" class="weather-icon">
+            <img src="./images/sun.png" class="weather-icon" alt="Weather icon">
             <h1 class="temp">22°c</h1>
             <h2 class="city">Jakarta</h2>
+            
+            <!-- Weather details -->
             <div class="details">
                 <div class="col">
-                    <img src="images/humidity.png" alt="">
+                    <img src="images/humidity.png" alt="Humidity icon">
                     <div>
                         <p class="humidity">50%</p>
                         <p>Humidity</p>
                     </div>
                 </div>
                 <div class="col">
-                    <img src="images/windy.png" id="windy">
+                    <img src="images/windy.png" id="windy" alt="Wind icon">
                     <div>
                         <p class="wind">15 km/h</p>
                         <p>Wind Speed</p>

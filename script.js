@@ -1,397 +1,312 @@
+// Import API key from config
 import config from "./config.js";
 
-const apiKey = config.apiKey;
-const apiUrl =
-  "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+// Constants
+const API = {
+    key: config.apiKey,
+    base: "https://api.openweathermap.org/data/2.5/weather?units=metric&q="
+};
 
-// Elements
-const searchBox = document.querySelector(".search input");
-const searchBtn = document.querySelector(".search button");
-const weatherIcon = document.querySelector(".weather-icon");
-const errorElement = document.querySelector(".error");
-const weatherElement = document.querySelector(".weather");
+// DOM Elements
+const DOM = {
+    searchBox: document.querySelector(".search input"),
+    searchBtn: document.querySelector(".search button"),
+    weatherIcon: document.querySelector(".weather-icon"),
+    errorElement: document.querySelector(".error"),
+    weatherElement: document.querySelector(".weather"),
+    cityElement: document.querySelector(".city"),
+    tempElement: document.querySelector(".temp"),
+    humidityElement: document.querySelector(".humidity"),
+    windElement: document.querySelector(".wind"),
+    timeElement: document.getElementById("current-time")
+};
+
+// Weather Theme Configuration
+const WEATHER_THEMES = {
+    Clear: {
+        backgroundColor: "#87CEEB",
+        cloudColor: "#FFFFFF",
+        sunColor: "#FFD700"
+    },
+    Clouds: {
+        backgroundColor: "#465760",
+        cloudColor: "#B8C6DB",
+        sunColor: "#C9C9C9"
+    },
+    Rain: {
+        backgroundColor: "#2F343B",
+        cloudColor: "#4A6670",
+        sunColor: "#85939E"
+    },
+    Snow: {
+        backgroundColor: "#E3E3E3",
+        cloudColor: "#FFFFFF",
+        sunColor: "#D4D4D4"
+    },
+    Mist: {
+        backgroundColor: "#B8C6DB",
+        cloudColor: "#E2E8F0",
+        sunColor: "#CBD5E1"
+    },
+    Drizzle: {
+        backgroundColor: "#4A6670",
+        cloudColor: "#85939E",
+        sunColor: "#A4B0BE"
+    },
+    Thunderstorm: {
+        backgroundColor: "#1F2937",
+        cloudColor: "#374151",
+        sunColor: "#4B5563"
+    }
+};
 
 // Vanta.js effect holder
 let vantaEffect = null;
 
-// Weather theme configurations
-const weatherThemes = {
-  Clear: {
-    backgroundColor: "#87CEEB",
-    cloudColor: "#FFFFFF",
-    sunColor: "#FFD700",
-  },
-  Clouds: {
-    backgroundColor: "#465760",
-    cloudColor: "#B8C6DB",
-    sunColor: "#C9C9C9",
-  },
-  Rain: {
-    backgroundColor: "#2F343B",
-    cloudColor: "#4A6670",
-    sunColor: "#85939E",
-  },
-  Snow: {
-    backgroundColor: "#E3E3E3",
-    cloudColor: "#FFFFFF",
-    sunColor: "#D4D4D4",
-  },
-  Mist: {
-    backgroundColor: "#B8C6DB",
-    cloudColor: "#E2E8F0",
-    sunColor: "#CBD5E1",
-  },
-  Fog: {
-    backgroundColor: "#A4B0C0",
-    cloudColor: "#D0D8E0",
-    sunColor: "#BBC3CF",
-  },
-  Drizzle: {
-    backgroundColor: "#4A6670",
-    cloudColor: "#85939E",
-    sunColor: "#A4B0BE",
-  },
-  Thunderstorm: {
-    backgroundColor: "#1F2937",
-    cloudColor: "#374151",
-    sunColor: "#4B5563",
-  },
-};
-
-// Set contrast automate
-function updateCardContrast(weatherCondition) {
-  try {
-    const theme = weatherThemes[weatherCondition] || weatherThemes.Clear;
-    const backgroundColor = theme.backgroundColor;
-
-    // Convert hex to RGB
-    const r = parseInt(backgroundColor.slice(1, 3), 16);
-    const g = parseInt(backgroundColor.slice(3, 5), 16);
-    const b = parseInt(backgroundColor.slice(5, 7), 16);
-
-    // Calculate relative luminance
-    // Formula: https://www.w3.org/TR/WCAG20/#relativeluminancedef
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-
-    // Adjust card background based on background luminance
-    const card = document.querySelector(".card");
-    if (luminance > 0.5) {
-      // Light background - use darker card
-      card.style.background = "rgba(0, 0, 0, 0.4)";
-      card.style.color = "#ffffff";
-    } else {
-      // Dark background - use lighter card
-      card.style.background = "rgba(255, 255, 255, 0.25)";
-      card.style.color = "#ffffff";
-    }
-
-    // Adjust card shadow based on background
-    card.style.boxShadow =
-      luminance > 0.5
-        ? "0 15px 35px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(255, 255, 255, 0.1)"
-        : "0 15px 35px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.2)";
-
-    console.log(
-      "Card contrast updated for weather condition:",
-      weatherCondition
-    );
-  } catch (error) {
-    console.error("Error updating card contrast:", error);
-  }
-}
-
-// Initialize Vanta.js effect
-function initVanta() {
-  try {
-    vantaEffect = VANTA.CLOUDS({
-      el: "#vanta-background",
-      mouseControls: true,
-      touchControls: true,
-      gyroControls: false,
-      minHeight: 200.0,
-      minWidth: 200.0,
-      backgroundColor: 0x465760,
-      cloudColor: 0xB8C6DB,
-      sunColor: 0xC9C9C9,
-      cloudShadowColor: 0x000000,
-      sunGlareColor: 0x666666,
-      sunlightColor: 0x888888,
-      speed: 1,
-    });
-    console.log("Vanta.js initialized with clouds theme");
-  } catch (error) {
-    console.error("Error initializing Vanta.js:", error);
-  }
-}
-
-// Update time display
-function updateTime() {
-  try {
-    const now = new Date();
-    const options = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: true,
-    };
-    document.getElementById("current-time").textContent = now.toLocaleString(
-      "en-US",
-      options
-    );
-  } catch (error) {
-    console.error("Error updating time:", error);
-  }
-}
-
-function showError(message = "Invalid city name") {
-  errorElement.textContent = message;
-  errorElement.style.display = "block";
-  weatherElement.style.display = "none";
-}
-
-function showWeather() {
-  weatherElement.style.display = "block";
-  errorElement.style.display = "none";
-}
-
-function validateInput(city) {
-  return city && city.trim() !== "";
-}
-
-// Update Vanta theme based on weather
-function updateVantaTheme(weatherCondition) {
-  try {
-    console.log("Updating theme for weather condition:", weatherCondition);
-    const theme = weatherThemes[weatherCondition] || weatherThemes.Clouds;
-
-    // Convert hex to numbers for Vanta.js
-    const bgColor = parseInt(theme.backgroundColor.replace("#", ""), 16);
-    const cloudColor = parseInt(theme.cloudColor.replace("#", ""), 16);
-    const sunColor = parseInt(theme.sunColor.replace("#", ""), 16);
-
-    // Update Vanta effect with smooth transition
-    if (vantaEffect) {
-      vantaEffect.setOptions({
-        backgroundColor: bgColor,
-        cloudColor: cloudColor,
-        sunColor: sunColor,
-      });
-    }
-
-    console.log("Theme updated successfully for:", weatherCondition);
-  } catch (error) {
-    console.error("Error updating Vanta theme:", error);
-  }
-}
-
-function updateWeatherIcon(weatherCondition) {
-  console.log("Updating weather icon for condition:", weatherCondition);
-
-  // Add error handling for the weather icon
-  weatherIcon.onerror = function () {
-    console.error("Failed to load weather icon:", this.src);
-    this.src = "images/clear-sky.png"; // fallback image
-  };
-
-  try {
-    // Convert to lowercase for case-insensitive comparison
-    const condition = weatherCondition.toLowerCase();
-
-    switch (condition) {
-      case "clouds":
-        weatherIcon.src = "images/clouds.png";
-        break;
-      case "clear":
-        weatherIcon.src = "images/clear-sky.png";
-        break;
-      case "rain":
-        weatherIcon.src = "images/rainy.png";
-        break;
-      case "drizzle":
-        weatherIcon.src = "images/drizzle.png";
-        break;
-      case "mist":
-        weatherIcon.src = "images/mist.png";
-        break;
-      case "fog":
-        weatherIcon.src = "images/fog.png";
-        break;
-      case "snow":
-        weatherIcon.src = "images/snow.png";
-        break;
-      case "thunderstorm":
-        weatherIcon.src = "images/thunderstorm.png";
-        break;
-      default:
-        console.warn("Unknown weather condition:", weatherCondition);
-        weatherIcon.src = "images/clear-sky.png";
-    }
-
-    console.log("Weather icon updated successfully:", weatherIcon.src);
-  } catch (error) {
-    console.error("Error updating weather icon:", error);
-    weatherIcon.src = "images/clear-sky.png";
-  }
-}
-
-function updateWeatherInfo(data) {
-  try {
-    console.log("Updating weather info with data:", data);
-
-    document.querySelector(".city").innerHTML = data.name;
-    document.querySelector(".temp").innerHTML =
-      Math.round(data.main.temp) + "°c";
-    document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
-    document.querySelector(".wind").innerHTML = data.wind.speed + " km/h";
-
-    console.log("Weather info updated successfully");
-  } catch (error) {
-    console.error("Error updating weather info:", error);
-  }
-}
-
-async function checkWeather(city) {
-  if (!validateInput(city)) {
-    showError("Please enter a city name");
-    return;
-  }
-
-  try {
-    console.log("Fetching weather data for:", city);
-    const response = await fetch(apiUrl + city + `&appid=${apiKey}`);
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        showError("City not found");
-      } else {
-        showError(`Error: ${response.status}`);
-      }
-      console.error("API response error:", response.status);
-      return;
-    }
-
-    const data = await response.json();
-    console.log("Weather data received:", data);
-
-    if (data.weather && data.weather[0]) {
-      updateWeatherInfo(data);
-      updateWeatherIcon(data.weather[0].main);
-      updateVantaTheme(data.weather[0].main);
-      showWeather();
-    } else {
-      throw new Error("Invalid weather data structure");
-    }
-  } catch (error) {
-    console.error("Error fetching weather:", error);
-    showError("Failed to fetch weather data");
-  }
-}
-
-function handleSearch() {
-  const cityName = searchBox.value.trim();
-  checkWeather(cityName);
-  searchBox.value = "";
-  searchBox.blur();
-}
-
-// Event Listeners
-function setupEventListeners() {
-  try {
-    searchBtn.addEventListener("click", handleSearch);
-
-    searchBox.addEventListener("keypress", (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        handleSearch();
-      }
-    });
-
-    // Prevent image interactions
-    const images = document.querySelectorAll("img");
-    const preventDefaultActions = (e) => e.preventDefault();
-
-    images.forEach((img) => {
-      ["dragstart", "contextmenu", "touchstart", "touchmove"].forEach(
-        (event) => {
-          img.addEventListener(
-            event,
-            preventDefaultActions,
-            event.startsWith("touch") ? { passive: false } : undefined
-          );
+/**
+ * Card Style Manager
+ */
+class CardStyleManager {
+    static updateCard() {
+        try {
+            const card = document.querySelector(".card");
+            
+            // Enhanced dark theme with more blur and opacity
+            card.style.background = "rgba(0, 0, 0, 0.65)"; // Increased opacity
+            card.style.backdropFilter = "blur(15px)"; // Increased blur
+            card.style.webkitBackdropFilter = "blur(15px)"; // For Safari support
+            card.style.color = "#ffffff";
+            card.style.boxShadow = "0 15px 35px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.1)";
+            card.style.border = "1px solid rgba(255, 255, 255, 0.1)";
+        } catch (error) {
+            console.error('Error updating card styles:', error);
         }
-      );
-    });
-
-    console.log("Event listeners setup complete");
-  } catch (error) {
-    console.error("Error setting up event listeners:", error);
-  }
+    }
 }
 
-// Initialize everything when DOM is loaded
-document.addEventListener("DOMContentLoaded", function () {
-  try {
-    console.log("Initializing weather app...");
+/**
+ * Vanta Background Manager
+ */
+class VantaManager {
+    static init() {
+        try {
+            vantaEffect = VANTA.CLOUDS({
+                el: "#vanta-background",
+                mouseControls: true,
+                touchControls: true,
+                gyroControls: false,
+                minHeight: 200.0,
+                minWidth: 200.0,
+                backgroundColor: 0x465760,
+                cloudColor: 0xB8C6DB,
+                sunColor: 0xC9C9C9,
+                cloudShadowColor: 0x000000,
+                sunGlareColor: 0x666666,
+                sunlightColor: 0x888888,
+                speed: 1
+            });
+        } catch (error) {
+            console.error('Error initializing Vanta.js:', error);
+        }
+    }
 
-    // Initialize Vanta.js
-    initVanta();
+    static updateTheme(weatherCondition) {
+        try {
+            const theme = WEATHER_THEMES[weatherCondition] || WEATHER_THEMES.Clouds;
+            if (vantaEffect) {
+                vantaEffect.setOptions({
+                    backgroundColor: parseInt(theme.backgroundColor.replace("#", ""), 16),
+                    cloudColor: parseInt(theme.cloudColor.replace("#", ""), 16),
+                    sunColor: parseInt(theme.sunColor.replace("#", ""), 16)
+                });
+            }
+        } catch (error) {
+            console.error('Error updating Vanta theme:', error);
+        }
+    }
+}
 
-    // Initialize time display
-    updateTime();
-    setInterval(updateTime, 1000);
+/**
+ * Weather Display Manager
+ */
+class WeatherManager {
+    static updateIcon(condition) {
+        try {
+            const weatherMap = {
+                clouds: "clouds.png",
+                clear: "clear-sky.png",
+                rain: "rainy.png",
+                drizzle: "drizzle.png",
+                mist: "mist.png",
+                fog: "fog.png",
+                snow: "snow.png",
+                thunderstorm: "thunderstorm.png"
+            };
 
-    // Setup event listeners
-    setupEventListeners();
+            const iconName = weatherMap[condition.toLowerCase()] || "clear-sky.png";
+            DOM.weatherIcon.src = `images/${iconName}`;
+            DOM.weatherIcon.onerror = () => {
+                console.error('Failed to load weather icon:', DOM.weatherIcon.src);
+                DOM.weatherIcon.src = "images/clear-sky.png";
+            };
+        } catch (error) {
+            console.error('Error updating weather icon:', error);
+            DOM.weatherIcon.src = "images/clear-sky.png";
+        }
+    }
 
-    console.log("Weather app initialized successfully");
-  } catch (error) {
-    console.error("Error initializing weather app:", error);
-  }
+    static updateInfo(data) {
+        try {
+            DOM.cityElement.textContent = data.name;
+            DOM.tempElement.textContent = `${Math.round(data.main.temp)}°c`;
+            DOM.humidityElement.textContent = `${data.main.humidity}%`;
+            DOM.windElement.textContent = `${data.wind.speed} km/h`;
+        } catch (error) {
+            console.error('Error updating weather info:', error);
+        }
+    }
+
+    static showError(message = "Invalid city name") {
+        DOM.errorElement.textContent = message;
+        DOM.errorElement.style.display = "block";
+        DOM.weatherElement.style.display = "none";
+    }
+
+    static showWeather() {
+        DOM.weatherElement.style.display = "block";
+        DOM.errorElement.style.display = "none";
+    }
+}
+
+/**
+ * Time Manager
+ */
+class TimeManager {
+    static update() {
+        try {
+            const now = new Date();
+            const options = {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: true
+            };
+            DOM.timeElement.textContent = now.toLocaleString("en-US", options);
+        } catch (error) {
+            console.error('Error updating time:', error);
+        }
+    }
+
+    static startTimer() {
+        this.update();
+        setInterval(() => this.update(), 1000);
+    }
+}
+
+/**
+ * Weather API Service
+ */
+class WeatherService {
+    static async getWeather(city) {
+        if (!city?.trim()) {
+            WeatherManager.showError("Please enter a city name");
+            return null;
+        }
+
+        try {
+            const response = await fetch(API.base + city + `&appid=${API.key}`);
+            
+            if (!response.ok) {
+                const errorMessage = response.status === 404 ? 
+                    "City not found" : `Error: ${response.status}`;
+                WeatherManager.showError(errorMessage);
+                return null;
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching weather:', error);
+            WeatherManager.showError("Failed to fetch weather data");
+            return null;
+        }
+    }
+
+    static async processWeatherData(data) {
+        if (!data?.weather?.[0]) {
+            throw new Error("Invalid weather data structure");
+        }
+
+        WeatherManager.updateInfo(data);
+        WeatherManager.updateIcon(data.weather[0].main);
+        VantaManager.updateTheme(data.weather[0].main);
+        CardStyleManager.updateCard(); // Maintain consistent dark theme
+        WeatherManager.showWeather();
+    }
+}
+
+/**
+ * Event Handler
+ */
+class EventHandler {
+    static setupListeners() {
+        try {
+            // Search handlers
+            DOM.searchBtn.addEventListener("click", this.handleSearch);
+            DOM.searchBox.addEventListener("keypress", (event) => {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    this.handleSearch();
+                }
+            });
+
+            // Image interaction prevention
+            this.setupImageProtection();
+        } catch (error) {
+            console.error('Error setting up event listeners:', error);
+        }
+    }
+
+    static async handleSearch() {
+        const cityName = DOM.searchBox.value.trim();
+        const weatherData = await WeatherService.getWeather(cityName);
+        
+        if (weatherData) {
+            await WeatherService.processWeatherData(weatherData);
+        }
+
+        DOM.searchBox.value = "";
+        DOM.searchBox.blur();
+    }
+
+    static setupImageProtection() {
+        const preventDefaultActions = (e) => e.preventDefault();
+        const events = ["dragstart", "contextmenu", "touchstart", "touchmove"];
+
+        document.querySelectorAll("img").forEach(img => {
+            events.forEach(event => {
+                img.addEventListener(
+                    event,
+                    preventDefaultActions,
+                    event.startsWith("touch") ? { passive: false } : undefined
+                );
+            });
+        });
+    }
+}
+
+/**
+ * App Initialization
+ */
+document.addEventListener("DOMContentLoaded", function() {
+    try {
+        VantaManager.init();
+        TimeManager.startTimer();
+        EventHandler.setupListeners();
+    } catch (error) {
+        console.error('Error initializing weather app:', error);
+    }
 });
-
-// Tambahkan CSS baru ke dalam style.css
-const additionalStyles = `
-.card {
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.5s ease-in-out;
-}
-
-.card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-}
-
-.search input {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #fff;
-    transition: all 0.3s ease;
-}
-
-.search input:focus {
-    background: rgba(255, 255, 255, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.search input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.search button {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
-}
-
-.search button:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: rotate(20deg);
-}
-`;
