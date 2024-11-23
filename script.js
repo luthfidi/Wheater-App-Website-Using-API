@@ -20,37 +20,41 @@ const weatherThemes = {
     backgroundColor: "#87CEEB",
     cloudColor: "#FFFFFF",
     sunColor: "#FFD700",
-    cardBackground: "rgba(0, 0, 0, 0.85)",
   },
   Clouds: {
     backgroundColor: "#465760",
     cloudColor: "#B8C6DB",
     sunColor: "#C9C9C9",
-    cardBackground: "rgba(255, 255, 255, 0.2)",
   },
   Rain: {
     backgroundColor: "#2F343B",
     cloudColor: "#4A6670",
     sunColor: "#85939E",
-    cardBackground: "rgba(255, 255, 255, 0.25)",
   },
   Snow: {
     backgroundColor: "#E3E3E3",
     cloudColor: "#FFFFFF",
     sunColor: "#D4D4D4",
-    cardBackground: "rgba(0, 0, 0, 0.8)",
   },
   Mist: {
     backgroundColor: "#B8C6DB",
     cloudColor: "#E2E8F0",
     sunColor: "#CBD5E1",
-    cardBackground: "rgba(0, 0, 0, 0.85)",
   },
   Fog: {
     backgroundColor: "#A4B0C0",
     cloudColor: "#D0D8E0",
     sunColor: "#BBC3CF",
-    cardBackground: "rgba(0, 0, 0, 0.9)",
+  },
+  Drizzle: {
+    backgroundColor: "#4A6670",
+    cloudColor: "#85939E",
+    sunColor: "#A4B0BE",
+  },
+  Thunderstorm: {
+    backgroundColor: "#1F2937",
+    cloudColor: "#374151",
+    sunColor: "#4B5563",
   },
 };
 
@@ -106,15 +110,15 @@ function initVanta() {
       gyroControls: false,
       minHeight: 200.0,
       minWidth: 200.0,
-      backgroundColor: 0x87ceeb,
-      cloudColor: 0xffffff,
-      sunColor: 0xffd700,
+      backgroundColor: 0x465760,
+      cloudColor: 0xB8C6DB,
+      sunColor: 0xC9C9C9,
       cloudShadowColor: 0x000000,
-      sunGlareColor: 0xff6633,
-      sunlightColor: 0xff9933,
+      sunGlareColor: 0x666666,
+      sunlightColor: 0x888888,
       speed: 1,
     });
-    console.log("Vanta.js initialized successfully");
+    console.log("Vanta.js initialized with clouds theme");
   } catch (error) {
     console.error("Error initializing Vanta.js:", error);
   }
@@ -162,7 +166,7 @@ function validateInput(city) {
 function updateVantaTheme(weatherCondition) {
   try {
     console.log("Updating theme for weather condition:", weatherCondition);
-    const theme = weatherThemes[weatherCondition] || weatherThemes.Clear;
+    const theme = weatherThemes[weatherCondition] || weatherThemes.Clouds;
 
     // Convert hex to numbers for Vanta.js
     const bgColor = parseInt(theme.backgroundColor.replace("#", ""), 16);
@@ -178,12 +182,7 @@ function updateVantaTheme(weatherCondition) {
       });
     }
 
-    // Update card contrast
-    updateCardContrast(weatherCondition);
-
-    // Add smooth transition to card
-    const card = document.querySelector(".card");
-    card.style.transition = "all 0.5s ease-in-out";
+    console.log("Theme updated successfully for:", weatherCondition);
   } catch (error) {
     console.error("Error updating Vanta theme:", error);
   }
