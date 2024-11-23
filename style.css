@@ -131,7 +131,7 @@ body {
 
 .weather-icon {
   width: 120px;
-  margin-top: 20px;
+  margin-top: 34px;
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
   animation: fadeIn 1s ease forwards 0.5s, float 3s ease-in-out infinite;
   user-select: none;
